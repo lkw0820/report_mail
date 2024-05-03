@@ -50,8 +50,7 @@ def send_mail(From, To, subject, message, attach_files=(),pw='',subtype=''):
     smtp.quit
 
 def main():
-    me = 'gewonlee99@naver.com'
-    receivers =['gewonlee99@irisinfotech.co.kr']
+
 
     subject = 'test'
     message = '메일 보내기 테스트'
