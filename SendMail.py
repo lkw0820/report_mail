@@ -8,7 +8,8 @@ from email.mime.application import MIMEApplication
 
 #SMTP 서버를 dictionary로 정의
 smtp_info ={
-    'hiworks':('smtps.hiworks.com',465)
+    'hiworks':('smtps.hiworks.com',465),
+    'naver.com': ('smtp.naver.com', 587)
 }
 #메일 보내는 함수 정의(발신 메일, 수신메일(여러개 가능), 제목, 본문, 첨부파일 경로, 비밀번호)
 def send_mail(From, To, subject, message, attach_files=(),pw='',subtype=''):
@@ -30,6 +31,11 @@ def send_mail(From, To, subject, message, attach_files=(),pw='',subtype=''):
             body = f.read()
         msg=MIMEApplication(body,_subtype=subtype)
 
+        msg.add_header('Content-Disposition', 'attatchment', filename=(Header(file,'utf-8').encode()))
+
+        form.attach(msg)
+
+
     id, host = From.rsplit("@",1)
     smtp_server,port=smtp_info[host]
 
@@ -50,11 +56,6 @@ def send_mail(From, To, subject, message, attach_files=(),pw='',subtype=''):
     smtp.quit
 
 def main():
-
-
-    subject = 'test'
-    message = '메일 보내기 테스트'
-
 
 
 if __name__ == "__main__":
