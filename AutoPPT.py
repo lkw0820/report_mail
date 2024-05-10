@@ -27,6 +27,11 @@ def table_contents(table):
     #         for i,paragraph in enumerate(cell.text_frame.paragraphs):
     #             print(paragraph.text)
     # table.cell(0, 1).text = text
+
+
+
+
+
     # 목요일 기준
     thismonday = datetime.datetime.today() - timedelta(days=3)
     thisfriday = datetime.datetime.today() + timedelta(days=1)
@@ -56,6 +61,24 @@ def table_contents(table):
 
 def main():
     try:
+        # 현재 날짜 및 시간을 가져옴
+        currentDate = datetime.datetime.now()
+        currentDay = datetime.datetime.now().weekday()
+        #formatted_thursday = ''
+        if currentDay < 3 :
+            print("이번주 보고서 제출날인 목요일 전입니다.")
+            until_thursday = (3-currentDay)%7
+            this_thursday = currentDate + datetime.timedelta(days=until_thursday)
+            formatted_thursday = this_thursday.strftime("%Y. %m. %d")
+        elif currentDay == 3:
+            print("목요일 입니다")
+            formatted_thursday = currentDate.strftime("%Y. %m. %d")
+        elif currentDay > 3:
+            print("목요일 이후입니다.")
+            print(currentDay)
+            until_thursday = (3-currentDay)%7
+            this_thursday = currentDate + datetime.timedelta(days=until_thursday)
+            formatted_thursday = this_thursday.strftime("%Y. %m. %d")
         # 복사할 PowerPoint 파일의 경로와 이름
         sourceFilePath = r'C:\Users\dev\Desktop\양식\주간보고_.pptx'
 
@@ -64,7 +87,7 @@ def main():
 
     #     # 새로운 파일 이름 설정 (원하는 파일명으로 변경)
         currentDate = datetime.datetime.now()
-        fileName = f"주간보고서_이기원_{currentDate.strftime('%Y%m%d')}.pptx"
+        fileName = f"주간보고서_이기원_{formatted_thursday}.pptx"
 
     #     # 대상 폴더에 저장할 새로운 파일의 전체 경로
         targetFilePath = os.path.join(targetFolderPath, fileName)
@@ -111,13 +134,12 @@ def main():
         para.alignment = PP_ALIGN.CENTER
         run = para.add_run()
 
-        # 현재 날짜 및 시간을 가져옴
-        currentDate = datetime.datetime.now()
 
-        # 날짜 포맷팅 (YYYY. MM. DD)
-        formattedDate = currentDate.strftime("%Y. %m. %d")
+
+        # # 날짜 포맷팅 (YYYY. MM. DD)
+        # formattedDate = currentDate.strftime("%Y. %m. %d")
         #택스트 내용
-        run.text = formattedDate
+        run.text = formatted_thursday
         print('날짜 변경 완')
 
         #두번째 슬라이드 선택
