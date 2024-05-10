@@ -19,7 +19,7 @@ from pptx.util import Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.table import Table
 
-def table_contents(table):
+def table_contents(table, thursday):
     # 슬라이드 내의 테이블 찾기
     # 테이블 내의 셀 내용 가져오기
     # for row in table.rows:
@@ -27,18 +27,13 @@ def table_contents(table):
     #         for i,paragraph in enumerate(cell.text_frame.paragraphs):
     #             print(paragraph.text)
     # table.cell(0, 1).text = text
-
-
-
-
-
     # 목요일 기준
-    thismonday = datetime.datetime.today() - timedelta(days=3)
-    thisfriday = datetime.datetime.today() + timedelta(days=1)
+    thismonday = thursday - timedelta(days=3)
+    thisfriday = thursday + timedelta(days=1)
     formattedMonday1 = thismonday.strftime("%m/%d")
     formattedFriday1 = thisfriday.strftime("%m/%d")
-    nextmonday = datetime.datetime.today() + timedelta(days=4)
-    nextfriday = datetime.datetime.today() + timedelta(days=8)
+    nextmonday = thursday + timedelta(days=4)
+    nextfriday = thursday + timedelta(days=8)
     formattedMonday2 = nextmonday.strftime("%m/%d")
     formattedFriday2 = nextfriday.strftime("%m/%d")
     arr_tit = []
@@ -75,7 +70,6 @@ def main():
             formatted_thursday = currentDate.strftime("%Y. %m. %d")
         elif currentDay > 3:
             print("목요일 이후입니다.")
-            print(currentDay)
             until_thursday = (3-currentDay)%7
             this_thursday = currentDate + datetime.timedelta(days=until_thursday)
             formatted_thursday = this_thursday.strftime("%Y. %m. %d")
@@ -87,7 +81,7 @@ def main():
 
     #     # 새로운 파일 이름 설정 (원하는 파일명으로 변경)
         currentDate = datetime.datetime.now()
-        fileName = f"주간보고서_이기원_{formatted_thursday}.pptx"
+        fileName = f"주간보고서_이기원_{this_thursday.strftime('%Y%m%d')}.pptx"
 
     #     # 대상 폴더에 저장할 새로운 파일의 전체 경로
         targetFilePath = os.path.join(targetFolderPath, fileName)
@@ -158,7 +152,7 @@ def main():
         shape = shape_list[shape_idx['report_table']]
 
         tbl=shape.table
-        table_contents(tbl)
+        table_contents(tbl, this_thursday)
         #파일 저장
         prs.save(pptFilePath)
     except Exception as ex:
