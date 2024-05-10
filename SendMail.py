@@ -1,62 +1,59 @@
 import smtplib
-import re
 import os
-from email.header import Header
-from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from email.header import Header
+import configparser
 
-#SMTP 서버를 dictionary로 정의
-smtp_info ={
-    'hiworks':('smtps.hiworks.com',465),
+    
+# SMTP 서버를 dictionary로 정의
+smtp_info = {
+    'hiworks': ('smtps.hiworks.com', 465),
     'naver.com': ('smtp.naver.com', 587)
 }
-#메일 보내는 함수 정의(발신 메일, 수신메일(여러개 가능), 제목, 본문, 첨부파일 경로, 비밀번호)
-def send_mail(From, To, subject, message, attach_files=(),pw='',subtype=''):
-    
-    #멀티파트로 메일을 만들기 위한 포맷 생성
-    form = MIMEBase('multipart','mixed')
 
-    #입력받은 메일 주소와 제목, 본문, 등의 문자열을 인코딩해서 form에 입력
-    form['Form'] = form
-    form['To'] = ','.join(To)
-    form['Subject'] = Header(subject.encode('utf-8'),'utf-8')
-    msg = MIMEText(message.encode('utf-8'),_subtype=subtype,_charset='utf-8')
-    form.attach(msg)
-    #여러개의 파일을 하나씩 첨부
-    for fpath in attach_files:
-        folder,file = os.path.split(fpath)
+# 메일 보내는 함수 정의
+def send_mail(From, To, subject, message, attach_files=(), pw=''):
+    smtp_server, port = smtp_info.get(From.split('@')[-1])
 
-        with open(fpath, 'rb') as f:
-            body = f.read()
-        msg=MIMEApplication(body,_subtype=subtype)
+    # 메일 객체 생성
+    msg = MIMEMultipart()
+    msg['From'] = From
+    msg['To'] = ', '.join(To)
+    msg['Subject'] = Header(subject, 'utf-8')
 
-        msg.add_header('Content-Disposition', 'attatchment', filename=(Header(file,'utf-8').encode()))
+    # 본문 추가
+    msg.attach(MIMEText(message, 'plain', 'utf-8'))
 
-        form.attach(msg)
+    # 첨부 파일 추가
+    for file_path in attach_files:
+        file_name = os.path.basename(file_path)
+        attachment = MIMEApplication(open(file_path, 'rb').read())
+        attachment.add_header('Content-Disposition', 'attachment', filename=(Header(file_name, 'utf-8').encode()))
+        msg.attach(attachment)
 
-
-    id, host = From.rsplit("@",1)
-    smtp_server,port=smtp_info[host]
-
-    #SMTP 접속여부 확인
-    if port == 587:
-        smtp = smtplib.SMTP(smtp_server,port)
-        rcode1,_ = smtp.ehlo()
-        rcode2,_ = smtp.starttls()
-    else:
-        smtp = smtplib.SMTP(smtp_server,port)
-        rcode1,_ = smtp.ehlo()
-        recode2 = 220
-    if rcode1 != 250 or recode2 != 220:
+    # SMTP 서버 연결 및 메일 전송
+    try:
+        smtp = smtplib.SMTP(smtp_server, port)
+        smtp.starttls()  # TLS 보안 연결
+        smtp.login(From, pw)
+        smtp.sendmail(From, To, msg.as_string())
         smtp.quit()
-        return '연결 실패'
-    smtp.login(From,pw)
-    smtp.sendmail(From,To,form.as_string())
-    smtp.quit
+        print("이메일 전송 성공!")
+    except Exception as e:
+        print("이메일 전송 실패:", str(e))
 
 def main():
+    config = configparser.ConfigParser()
+    me = config['MAIL']['FROMMAIL']
+    receivers = config['MAIL']['TOMAIL']
+    subject = config['MAIL']['SUBJECT']
+    message = config['MAIL']['MESSAGE']
+    attach_files = config['MAIL']['ATTACHFILE']
+    pw = config['MAIL']['PASSWORD']
 
+    send_mail(me, receivers, subject, message, attach_files, pw)
 
 if __name__ == "__main__":
     main()
