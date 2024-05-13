@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.header import Header
 import configparser
+import sys
 
     
 # SMTP 서버를 dictionary로 정의
@@ -54,6 +55,10 @@ def main():
     pw = config['MAIL']['PASSWORD']
 
     send_mail(me, receivers, subject, message, attach_files, pw)
+
+    
+    user_input = input("아무 키나 입력하세요 (종료됩니다): ")
+    sys.exit()
 
 if __name__ == "__main__":
     main()
