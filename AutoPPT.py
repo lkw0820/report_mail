@@ -56,11 +56,12 @@ def table_contents(table, thursday):
     
 
 def main():
+    targetFilePath=''
     try:
         # 현재 날짜 및 시간을 가져옴
         currentDate = datetime.datetime.now()
         currentDay = datetime.datetime.now().weekday()
-        #formatted_thursday = ''
+        formatted_thursday = ''
         if currentDay < 3 :
             print("이번주 보고서 제출날인 목요일 전입니다.")
             until_thursday = (3-currentDay)%7
@@ -69,6 +70,7 @@ def main():
         elif currentDay == 3:
             print("목요일 입니다")
             formatted_thursday = currentDate.strftime("%Y. %m. %d")
+            this_thursday = currentDate
         elif currentDay > 3:
             print("목요일 이후입니다.")
             until_thursday = (3-currentDay)%7
@@ -159,6 +161,8 @@ def main():
 
     except Exception as ex:
         print("에러 발생:", ex)
+
+    # input("Press Enter to close the window...")
     
 
 
@@ -166,7 +170,7 @@ def main():
 if __name__ == "__main__":
     main()
 
-    user_input = input("아무 키나 입력하세요 (종료됩니다): ")
-    sys.exit()
+    # user_input = input("아무 키나 입력하세요 (종료됩니다): ")
+    # sys.exit()
 
 
