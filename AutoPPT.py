@@ -18,6 +18,7 @@ except:
 from pptx.util import Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.table import Table
+import sys
 
 def table_contents(table, thursday):
     # 슬라이드 내의 테이블 찾기
@@ -155,6 +156,7 @@ def main():
         table_contents(tbl, this_thursday)
         #파일 저장
         prs.save(pptFilePath)
+
     except Exception as ex:
         print("에러 발생:", ex)
     
@@ -163,5 +165,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    user_input = input("아무 키나 입력하세요 (종료됩니다): ")
+    sys.exit()
 
 
